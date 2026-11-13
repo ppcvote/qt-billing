@@ -420,6 +420,27 @@ nav.tabs button[aria-selected="true"]::before{content:"";position:absolute;top:-
 .ia-c span{display:block;font-size:11px;padding:8px 10px;color:var(--ink-2)}
 @media (min-width:960px){.intro-sheet{max-width:520px}}
 
+
+/* polish */
+.hello{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:2px 4px 0;flex-wrap:wrap}
+.hello b{font-size:21px;font-weight:900;letter-spacing:.01em}
+.hello span{font-size:13px;color:var(--ink-2)}
+.flag .t{font-size:13px;color:var(--ink-2);font-weight:500}
+.flag .t2{font-weight:800;font-size:17px;margin-top:2px;line-height:1.35}
+.credit{text-align:center;font-size:12px;color:var(--ink-3);padding-block:6px 0;letter-spacing:.06em}
+.in-list{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.in-list li{display:grid;grid-template-columns:4px 1fr;gap:10px;font-size:14px;line-height:1.5;color:var(--ink)}
+.in-list li::before{content:"";border-radius:2px;background:var(--warn)}
+.in-list li.bad::before{background:var(--bad)}
+.in-list li b{display:block;font-size:15px}
+.in-more{font-size:13px;color:var(--ink-2);margin-top:2px}
+.ia-a{display:flex;flex-direction:column;gap:8px;width:226px;transform:translateX(-30px)}
+.ia-a div{background:var(--sheet);border-radius:8px;padding:8px 10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;box-shadow:var(--shadow);border-left:4px solid var(--warn);font-size:12px}
+.ia-a div.bad{border-left-color:var(--bad)}
+.ia-a b{font-family:var(--f-disp);font-size:16px}
+.ia-a div.bad b{color:var(--bad)}
+.ia-a+.stamp,.stamp{position:absolute;right:12px;top:16px;transform:rotate(9deg);border:2px solid var(--bad);color:var(--bad);font-weight:900;font-size:13px;padding:2px 8px;border-radius:6px;background:var(--sheet);letter-spacing:.1em}
+
 @media (min-width:960px){
   body.t-field .site{display:grid;grid-template-columns:minmax(0,1fr) 410px;gap:20px;align-items:start}
   body.t-field #side{position:sticky;top:84px;transform:none;visibility:visible;left:auto;right:auto;bottom:auto;z-index:1;border-radius:14px;border:1px solid var(--rule);box-shadow:var(--shadow);max-height:calc(100vh - 110px);padding:0 16px 90px}
@@ -683,13 +704,13 @@ function flags(C){
   const out=[];const fmt=(n,d=2)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
   for(const it of C.items){
     const cum=cumFloor(C,it.id,draftPeriod(C).id),st=stagesFor(C,it),pt=propTotal(it),tc=r4(sum(cum));let bad=false;
-    if(!pt){if(Math.abs(tc)>.005)out.push({sev:'warn',id:it.id,f:'全案',t:`第 ${it.no} 項沒有提出量`,d:`${it.name}：已請 ${fmt(tc,tc%1?2:0)} ${it.unit}，分層表沒有對應的提出量，結算時對不了帳。`});continue}
+    if(!pt){if(Math.abs(tc)>.005)out.push({k:'noprop',q:tc,sev:'warn',id:it.id,f:'全案',t:`第 ${it.no} 項沒有提出量`,d:`${it.name}：已請 ${fmt(tc,tc%1?2:0)} ${it.unit}，分層表沒有對應的提出量，結算時對不了帳。`});continue}
     for(const f in cum){if(f==='全案')continue;const c=cum[f];if(Math.abs(c)<.005)continue;const p=it.prop[f]||0;
-      if(!p){out.push({sev:'warn',id:it.id,f,t:`第 ${it.no} 項 ${f} 沒有提出量`,d:`${it.name}：這層已請 ${fmt(c)} ${it.unit}，但沒有提出量。`});continue}
-      if(c>p+.01){bad=true;const o=r4(c-p);out.push({sev:'bad',id:it.id,f,t:`第 ${it.no} 項 ${f} 多請 ${fmt(o)} ${it.unit}`,d:`${it.name}：提出 ${fmt(p)}，累計已請 ${fmt(c)}，約 ${fmt(o*it.price,0)} 元。`});continue}
-      if(st&&st.length>1&&!onStage(st,c/p))out.push({sev:'warn',id:it.id,f,t:`第 ${it.no} 項 ${f} 請到 ${(c/p*100).toFixed(1)}%`,d:`${it.name}：合約階段是 ${Math.round(C.primer*100)}%（底漆）和 100%（面漆）。通常是提出量或比例改過，前期沒有跟著調。`})}
-    if(!bad&&tc>pt+.01)out.push({sev:'bad',id:it.id,f:'全案',t:`第 ${it.no} 項合計多請 ${fmt(tc-pt)} ${it.unit}`,d:`${it.name}：提出 ${fmt(pt)}，累計已請 ${fmt(tc)}，約 ${fmt((tc-pt)*it.price,0)} 元。`});
-    if(cum['全案']&&Math.abs(cum['全案'])>.005)out.push({sev:'warn',id:it.id,f:'全案',t:`第 ${it.no} 項有 ${fmt(cum['全案'])} ${it.unit} 沒有分到樓層`,d:`${it.name}：請款單和分層表的數字對不上，差額記在「全案」。請確認是哪幾層。`});
+      if(!p){out.push({k:'nopropf',q:c,sev:'warn',id:it.id,f,t:`第 ${it.no} 項 ${f} 沒有提出量`,d:`${it.name}：這層已請 ${fmt(c)} ${it.unit}，但沒有提出量。`});continue}
+      if(c>p+.01){bad=true;const o=r4(c-p);out.push({k:'over',q:o,sev:'bad',id:it.id,f,t:`第 ${it.no} 項 ${f} 多請 ${fmt(o)} ${it.unit}`,d:`${it.name}：提出 ${fmt(p)}，累計已請 ${fmt(c)}，約 ${fmt(o*it.price,0)} 元。`});continue}
+      if(st&&st.length>1&&!onStage(st,c/p))out.push({k:'ratio',r:c/p,sev:'warn',id:it.id,f,t:`第 ${it.no} 項 ${f} 請到 ${(c/p*100).toFixed(1)}%`,d:`${it.name}：合約階段是 ${Math.round(C.primer*100)}%（底漆）和 100%（面漆）。通常是提出量或比例改過，前期沒有跟著調。`})}
+    if(!bad&&tc>pt+.01)out.push({k:'overtotal',q:r4(tc-pt),sev:'bad',id:it.id,f:'全案',t:`第 ${it.no} 項合計多請 ${fmt(tc-pt)} ${it.unit}`,d:`${it.name}：提出 ${fmt(pt)}，累計已請 ${fmt(tc)}，約 ${fmt((tc-pt)*it.price,0)} 元。`});
+    if(cum['全案']&&Math.abs(cum['全案'])>.005)out.push({k:'quanan',q:cum['全案'],sev:'warn',id:it.id,f:'全案',t:`第 ${it.no} 項有 ${fmt(cum['全案'])} ${it.unit} 沒有分到樓層`,d:`${it.name}：請款單和分層表的數字對不上，差額記在「全案」。請確認是哪幾層。`});
   }
   return out;
 }
@@ -762,10 +783,12 @@ function log(t,amt){C.log=Array.isArray(C.log)?C.log:[];C.log.push({by:S.me||nul
 function overall(){let prop=0,prev=0,draft=0;const d=D();for(const it of C.items){const pt=QT.propTotal(it);if(!pt)continue;prop+=pt*it.price;
   const pv=Math.min(QT.r4(QT.cumTotal(C,it.id)-QT.qtyIn(C,d,it.id)),pt);prev+=Math.max(pv,0)*it.price;draft+=Math.max(0,Math.min(QT.qtyIn(C,d,it.id),pt-Math.max(pv,0)))*it.price}
   return{prop,prev,draft}}
+const shortCo=()=>(C.contractor||'油漆工程').replace(/油漆.*$|工程.*$|有限公司|企業社/g,'')||C.contractor;
+const label=it=>{if(!it)return'';const pl=place(it.name)||it.name;const ty=/批|土/.test(it.name)?'批土':/晴雨漆/.test(it.name)?'晴雨漆':/水泥漆/.test(it.name)?'水泥漆':/漆/.test(it.name)?'油漆':'';return ty&&!pl.includes(ty)?pl+' '+ty:pl};
 const place=n=>n.replace(/\(.*?\)|（.*?）/g,'').replace(/清水模|磨平/g,'').replace(/(刷|噴|批|披).*$/,'').trim();
 function sentCur(P){const i=C.periods.indexOf(P);if(P.cum==null)return null;for(let j=i-1;j>=0;j--){const q=C.periods[j];if(q.cum!=null)return r2(P.cum-q.cum)}return P.cum}
 function dateTxt(ms){const d=new Date(ms);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
-function who(id){if(!id)return S.mode==='db'?'某人':'這支手機';if(id===S.me)return '你';return S.names[id]||'某人'}
+function who(id){if(!id)return S.mode==='db'?'某人':'你';if(id===S.me)return '你';return S.names[id]||'某人'}
 
 /* ---------- 現場 ---------- */
 function vField(){
@@ -776,12 +799,14 @@ function vField(){
     return `${i===gi?'<div class="gl" aria-hidden="true"><span>GL ±0</span></div>':''}<button class="fl ${QT.isBase(f)?'base':''} ${s.over?'over':''} ${!n&&!s.draft&&!s.over?'idle':''}" data-f="${esc(f)}" aria-pressed="${U.floor===f}" aria-label="${esc(f)}，已請 ${pctTxt(all)}${n?'，還有 '+n+' 項可報':''}${s.over?'，有工項多請':''}">
       <span class="fn">${esc(f)}</span><span class="bar"><span class="fill"><i class="p" style="width:${p*100}%"></i><i class="d" style="width:${dd*100}%"></i></span>${dd>.004?`<svg class="rl" style="left:${(p+dd)*100}%" viewBox="0 0 32 32" aria-hidden="true"><rect class="r-head" x="3" y="4" width="21" height="9" rx="2.5"/><path class="r-arm" d="M24 8.5h4v8.5H16v4.5"/><rect class="r-grip" x="13.4" y="20.5" width="5.2" height="9" rx="1.6"/></svg>`:''}</span>
       <span class="pc"><b>${s.prop?pctTxt(all):'—'}</b>${n?`<small>可報 ${n}</small>`:''}</span></button>`}).join('');
+  const V=window.__VIEWER__||'',now=new Date(),hr=now.getHours(),g=hr<5?'辛苦了':hr<11?'早安':hr<18?'午安':'辛苦了';
   return `
+  <div class="hello"><b>${V?esc(V)+'，':''}${g}</b><span>${esc(C.short||C.name)}・${now.getMonth()+1}/${now.getDate()}（${'日一二三四五六'[now.getDay()]}）</span></div>
   <div class="chipcard">
     <div class="swatch"><span class="tape">${esc(d.label)}草稿</span>
       <span class="lbl">本期請款（未稅）</span>
       <span class="amt"><small>NT$</small><span id="heroAmt" data-to="${Math.round(t.cur)}">${money(U.heroFrom==null?t.cur:U.heroFrom)}</span></span>
-      <span class="sub">含稅 ${money(t.cur+tax(t.cur))} 元</span><span class="drip" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="sub">${t.cur?`含稅 ${money(t.cur+tax(t.cur))} 元`:'還沒有本期回報，從下面「開始巡場」開始'}</span><span class="drip" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     </div>
     <div class="chipfoot">
       <span class="lead">整體進度 ${pctTxt((o.prev+o.draft)/(o.prop||1))}</span><span class="nm">提出總額 ${money(o.prop)} 元</span>
@@ -1022,8 +1047,8 @@ function vAlert(){
   <section class="card"><div class="card-h"><h2>如果今天結案</h2><span class="eyebrow">含本期草稿・未稅</span></div>
     <div class="tiles"><div class="tile"><span>要扣回</span><b class="${back>0?'neg':''}">${money(back)}<small>元</small></b></div><div class="tile"><span>還能請</span><b>${money(left)}<small>元</small></b></div></div>
     <p class="hint">中間期可以先請後還，這裡只提醒，不會擋請款。結案前全部對平就好。</p></section>
-  <section class="card"><div class="card-h"><h2>要注意的 ${fl.length} 件事</h2></div>
-    ${fl.length?fl.map(f=>`<div class="flag ${f.sev}"><div><div class="t"><span class="pill ${f.sev}">${f.sev==='bad'?'多請':'待確認'}</span>${esc(f.t)}</div><div class="d">${esc(f.d)}</div>${fixHtml(f)}</div></div>`).join(''):'<p class="hint">目前沒有異常。</p>'}</section>
+  <section class="card"><div class="card-h"><h2>要注意的 ${flagGroups().length} 件事</h2></div>
+    ${flagGroups().length?flagGroups().map(flagCard).join(''):'<p class="hint">目前沒有異常，帳都對得起來。</p>'}</section>
   <section class="card"><details><summary>各工項進度</summary><div>${diff.map(x=>{const pct=x.p?x.c/x.p:0;return`<div class="pr"><div class="pr-h"><span class="nm">${esc(x.it.no)}　${esc(x.it.name)}</span>${x.p&&x.d<-.005?'<span class="pill bad">多請</span>':pct>=.995?'<span class="pill ok">請滿</span>':''}</div>
       <div class="mbar"><i class="p" style="width:${Math.max(0,Math.min(pct,1))*100}%;${pct>1.001?'background:var(--bad)':''}"></i></div>
       <div class="pr-m"><span>${fmt(x.c)} / ${x.p?fmt(x.p):'無提出量'} ${esc(x.it.unit)}</span><span class="${x.d<-.005?'neg':''}">${x.p?(x.d<-.005?'扣回 ':'剩 ')+money(Math.abs(x.d*x.it.price))+' 元':''}</span></div></div>`}).join('')}</div></details></section>`;
@@ -1056,7 +1081,8 @@ function vData(){
     <label class="row" for="primer" style="justify-content:space-between"><span>底漆完成可請比例<br><span class="hint">面漆完成固定 100%。改比例後，已用舊比例請的樓層會出現差額提醒。</span></span><span class="row" style="gap:6px"><input id="primer" class="num-in" type="number" min="1" max="99" step="1" style="width:88px" value="${Math.round(C.primer*100)}" ${S.ro?'disabled':''}>%</span></label>
     ${C.demo&&!S.ro?'<button class="btn" id="resetDemo">示範資料重設</button>':''}
     <button class="btn" id="introAgain">再看一次使用說明</button>
-    <div class="sync ${S.mode==='db'?'on':''}"><i></i><span>${S.mode==='db'?'共用資料：有權限的人都看到同一份，修改會即時同步。':'資料只存在這支手機的瀏覽器，換手機或清除瀏覽資料就會不見。'}</span></div></section>`;
+    <div class="sync ${S.mode==='db'?'on':''}"><i></i><span>${S.mode==='db'?'共用資料：有權限的人都看到同一份，修改會即時同步。':'資料只存在這支手機的瀏覽器，換手機或清除瀏覽資料就會不見。'}</span></div></section>
+  <p class="credit">為${esc(shortCo())}客製・2026.11</p>`;
 }
 async function onFiles(list){
   list=[...list].filter(f=>/\.xlsx?$/i.test(f.name));
@@ -1101,6 +1127,7 @@ function upperTW(num){let n=Math.round(Math.abs(num));if(!n)return'零';const D=
     ds.forEach((d,i)=>{if(d===0){if(t||s)zero=true;return}if(zero&&(t||s))t+='零';zero=false;t+=D[d]+U[i]});s+=t+big});
   return (num<0?'負':'')+s}
 function buzz(){try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}}
+function hideToast(){clearTimeout(toast.h);const t=document.getElementById('toast');if(t)t.hidden=true}
 function toast(m,undo){const t=$('#toast');t.innerHTML='';const sp=document.createElement('span');sp.textContent=m;t.appendChild(sp);
   if(undo){const b=document.createElement('button');b.textContent='復原';b.onclick=()=>{clearTimeout(toast.h);t.hidden=true;undo();buzz()};t.appendChild(b)}
   t.hidden=false;t.classList.toggle('up',(U.sheet&&!isDesk())||U.rep.open||!!U.paper);clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,undo?5200:2800)}
@@ -1111,7 +1138,7 @@ function walkLoad(){try{const w=JSON.parse(lsGet(WK())||'null');if(w&&w.sel&&w.d
 function walkSave(){const W=U.walk;if(W)lsSet(WK(),JSON.stringify({sel:W.sel,i:W.i,order:W.order,draft:D(),floors:W.floors}))}
 function walkClear(){try{localStorage.removeItem(WK())}catch(e){}}
 function walkFloors(order){const fl=C.floors.filter(f=>QT.floorStat(C,f).n>0);return order==='up'?fl:fl.slice().reverse()}
-function walkStart(resume){
+function walkStart(resume){hideToast();
   const sv=resume?walkLoad():null,order=sv?.order||U.walkOrder||'down';
   const floors=sv?sv.floors.filter(f=>C.floors.includes(f)):walkFloors(order);
   if(!floors.length){toast('目前沒有可以回報的樓層');return}
@@ -1130,7 +1157,7 @@ function vWalk(){
     const rows=[...g.values()];
     return top+`<div class="wk-body" id="wkBody"><div class="wk-in ${anim}">
       <div class="tot"><span>這次可以請<br><span class="hint">${tot.n} 筆・未稅</span></span><b>${money(tot.a)} 元</b></div>
-      ${rows.length?`<div class="card" style="padding-block:4px">${rows.map(r=>{const it=QT.item(C,r.id);return`<div class="sumrow"><b>${esc(place(it.name)||it.name)}・${esc(r.st)}</b><span class="a">${money(r.q*it.price)}</span><small>${esc(QT.sortFloors(r.fl).join('、'))}・＋${fmt(r.q)} ${esc(it.unit)}</small></div>`}).join('')}</div>
+      ${rows.length?`<div class="card" style="padding-block:4px">${rows.map(r=>{const it=QT.item(C,r.id);return`<div class="sumrow"><b>${esc(label(it))}・${esc(r.st)}</b><span class="a">${money(r.q*it.price)}</span><small>${esc(QT.sortFloors(r.fl).join('、'))}・＋${fmt(r.q)} ${esc(it.unit)}</small></div>`}).join('')}</div>
         <button class="btn quiet" id="wkReset">全部清掉，重新巡場</button>`:'<p class="hint">還沒選任何項目。回到各樓層點「底漆完成」或「面漆完成」。</p>'}
     </div></div><div class="wk-nav"><button class="btn" id="wkBack">回去修改</button><button class="btn pri" id="wkCommit" ${tot.n?'':'disabled'}>加入本期 ＋${money(tot.a)}</button></div>`}
   const f=W.floors[W.i],its=wkItems(f),prev=W.i>0?W.floors[W.i-1]:null;
@@ -1139,7 +1166,7 @@ function vWalk(){
   return top+`<div class="wk-body" id="wkBody"><div class="wk-in ${anim}">
     <div class="wk-floor"><span class="wk-big">${esc(f)}</span><div class="side"><span class="pill info">可報 ${its.length} 項</span>${canCopy?`<button class="btn" id="wkCopy">跟 ${esc(prev)} 一樣</button>`:''}</div></div>
     ${its.map(it=>{const k=it.id+'|'+f,opts=QT.options(C,it,f),cur=W.sel[k]||'',pv=QT.cumFloor(C,it.id,D())[f]||0;
-      return `<div class="wk-it"><div class="wk-name" id="wn-${esc(it.id)}">${esc(place(it.name)||it.name)}<small>${esc(it.name)}・已請 ${pctTxt(pv/it.prop[f])}</small></div>
+      return `<div class="wk-it"><div class="wk-name" id="wn-${esc(it.id)}">${esc(label(it))}<small>${esc(it.name)}・已請 ${pctTxt(pv/it.prop[f])}</small></div>
       <div class="seg3" role="radiogroup" aria-labelledby="wn-${esc(it.id)}" style="grid-template-columns:repeat(${opts.length+1},minmax(0,1fr))">
         <button role="radio" class="none" aria-checked="${!cur}" data-wk="${esc(k)}" data-k="">還沒<small>這次不請</small></button>
         ${opts.map(o=>`<button role="radio" aria-checked="${cur===o.k}" data-wk="${esc(k)}" data-k="${esc(o.k)}">${esc(o.k)}<small>＋${fmt(o.q)} ${esc(it.unit)}</small></button>`).join('')}
@@ -1199,6 +1226,25 @@ function fixHtml(fl){
     if(fi>.004)b.push([fi,`面漆已完成，補到 100%（＋${money(fi*it.price)} 元）`])}
   return b.length?`<div class="fix-acts">${b.map(([d,l])=>`<button class="btn" data-fix="${esc(it.id)}|${esc(fl.f)}|${d}">${esc(l)}</button>`).join('')}</div>`:'';
 }
+
+
+function flagGroups(){const gm=new Map(),out=[];for(const f of QT.flags(C)){const k=f.id+'|'+f.k;let g=gm.get(k);if(!g){g={id:f.id,k:f.k,sev:f.sev,items:[]};gm.set(k,g);out.push(g)}g.items.push(f)}
+  return out.sort((a,b)=>(a.sev==='bad'?0:1)-(b.sev==='bad'?0:1))}
+function flagCard(g){const it=QT.item(C,g.id);if(!it)return'';const fl=g.items.filter(x=>x.f!=='全案').map(x=>x.f),u=it.unit;let t='',d='';
+  if(g.k==='over'){const q=g.items.reduce((s,x)=>s+x.q,0);t=`${fl.join('、')} 多請 ${fmt(q)} ${u}`;d=`累計超過提出量，約 ${money(q*it.price)} 元。`}
+  else if(g.k==='overtotal'){const q=g.items[0].q;t=`合計多請 ${fmt(q)} ${u}`;d=`提出 ${fmt(QT.propTotal(it))} ${u}，多出約 ${money(q*it.price)} 元。`}
+  else if(g.k==='ratio'){t=g.items.map(x=>`${x.f} 請到 ${(x.r*100).toFixed(1)}%`).join('、');d=`合約只有底漆 ${Math.round(C.primer*100)}% 和面漆 100% 兩個階段。通常是提出量改過，前期沒有跟著調。`}
+  else if(g.k==='noprop'){const q=g.items[0].q;t=`請了 ${fmt(q,q%1?2:0)} ${u}，沒有提出量`;d=`約 ${money(q*it.price)} 元，分層表沒有對應的提出量，結算時對不了帳。`}
+  else if(g.k==='nopropf'){t=`${fl.join('、')} 沒有提出量`;d='這幾層有請款，但分層表沒有提出量。'}
+  else if(g.k==='quanan'){t=`${fmt(g.items[0].q)} ${u} 沒有分到樓層`;d='請款單和分層表的數字對不上，差額記在「全案」。請確認是哪幾層。'}
+  return `<div class="flag ${g.sev}"><div><div class="t"><span class="pill ${g.sev}">${g.sev==='bad'?'多請':'待確認'}</span>第 ${esc(it.no)} 項・${esc(label(it))}</div><div class="t2">${esc(t)}</div><div class="d">${esc(d)}</div>${fixGroup(g)}</div></div>`}
+function fixGroup(g){if(S.ro)return'';const it=QT.item(C,g.id);if(!it)return'';const st=QT.stagesFor(C,it),A=[],B=[];
+  for(const x of g.items){if(x.f==='全案')continue;const p=it.prop[x.f]||0;if(!p)continue;const c=QT.cumFloor(C,it.id,D())[x.f]||0;
+    if(g.k==='over'){const d=QT.r4(p-c);if(d<-.004)A.push([x.f,d])}
+    else if(g.k==='ratio'&&st&&st.length>1){const pr=QT.r4(p*st[0].pct-c),fi=QT.r4(p-c);if(pr<-.004)A.push([x.f,pr]);if(fi>.004)B.push([x.f,fi])}}
+  const btn=(arr,lab)=>{if(!arr.length)return'';const amt=arr.reduce((s,[,d])=>s+d*it.price,0);return `<button class="btn" data-fix="${esc(it.id)}|${arr.map(([f,d])=>esc(f)+':'+d).join(',')}">${esc(lab)}（${amt<0?'−':'＋'}${money(Math.abs(amt))} 元）</button>`};
+  const a=btn(A,g.k==='over'?`在${DP().label}扣回`:`扣回到底漆 ${Math.round((st?st[0].pct:0)*100)}%`),b=btn(B,'都已面漆完成，補到 100%');
+  return a||b?`<div class="fix-acts">${a}${b}</div>`:''}
 
 /* ---------- 請款單紙本預覽 ---------- */
 function vPaper(){
@@ -1260,22 +1306,36 @@ function dragClose(sheet,onClose){let y0=null,dy=0;
 
 
 /* ---------- 第一次進來的引導 ---------- */
-const INTRO_KEY='qt-intro-1';
+const INTRO_KEY='qt-intro-2';
+function insights(){
+  const gm=new Map();for(const f of QT.flags(C)){const k=f.k==='noprop'?'noprop':f.id+'|'+f.k;if(!gm.has(k))gm.set(k,[]);gm.get(k).push(f)}
+  const out=[];
+  for(const arr of gm.values()){const it=QT.item(C,arr[0].id),k=arr[0].k;if(!it)continue;
+    if(k==='over'||k==='overtotal'){const q=arr.reduce((s,x)=>s+x.q,0),fl=arr.filter(x=>x.f!=='全案').map(x=>x.f);out.push({bad:1,w:q*it.price,h:`多請 ${money(q*it.price)} 元`,s:label(it),a:money(q*it.price),t:`${label(it)}${fl.length?`（${fl.join('、')}）`:''}累計超過提出量 ${fmt(q)} ${it.unit}`})}
+    else if(k==='ratio'){const st=QT.stagesFor(C,it);const w=arr.reduce((s,x)=>{const p=it.prop[x.f]||0;return s+Math.abs((x.r-(st?st[0].pct:.45))*p*it.price)},0);
+      out.push({w,h:`${label(it)}比例不符`,s:label(it),a:(arr[0].r*100).toFixed(1)+'%',t:`${arr.map(x=>`${x.f} 請到 ${(x.r*100).toFixed(1)}%`).join('、')}，合約是 ${Math.round(C.primer*100)}% 或 100%`})}
+    else if(k==='noprop'){const amt=arr.reduce((s,x)=>{const i2=QT.item(C,x.id);return s+x.q*(i2?i2.price:0)},0);const names=[...new Set(arr.map(x=>label(QT.item(C,x.id)).replace(/[+＋(（].*$/,'')))];
+      out.push({w:amt,h:`${money(amt)} 元沒有依據`,s:names[0]+(arr.length>1?` 等 ${arr.length} 項`:''),a:money(amt),t:`${names.slice(0,2).join('、')}${arr.length>2?` 等 ${arr.length} 項`:''}已請款，但分層表沒有提出量`})}}
+  return out.sort((a,b)=>(b.bad||0)-(a.bad||0)||b.w-a.w);
+}
 function introSteps(){
-  const sp=QT.sentPeriods(C),last=sp[sp.length-1];
+  const V=window.__VIEWER__||'',sp=QT.sentPeriods(C),last=sp[sp.length-1],ins=insights(),co=shortCo();
   return[
-    {t:'歡迎使用請款助手',d:`${C.name}${last?`到${last.label}`:''}的請款已經載入好了。現在是${DP().label}，本期從 0 開始累積，巡場報完就會自動算好金額。`,
+    {t:`${V?V+'，':''}這是為${co}做的請款助手`,d:`${C.name}・${C.floors.length} 層・${C.items.length} 個工項，${last?`第 1～${last.no} 期`:'之前'}的請款都整理好了。以前一份表要對 20～30 分鐘，現在巡完場，請款單就自動算好。`,
      art:`<div class="ia-b">${[['PRF',.22,.18],['12F',.9,0],['11F',.6,.3],['10F',.6,.3],['9F',.6,0]].map(([f,p,d])=>`<div>${f}<span><i class="p" style="width:${p*100}%"></i><i class="d" style="width:${d*100}%"></i></span></div>`).join('')}</div>`},
-    {t:'巡場時，一層一層點',d:'按「開始巡場」，每層點「底漆完成」或「面漆完成」。標準層可以按「跟上一層一樣」，走完看總結再加入本期。懶得點也可以按「說一句回報」用講的。',
+    {t:'我們先幫你對過一次帳',list:ins.slice(0,3),more:ins.length?`完整清單共 ${flagGroups().length} 件，都整理在「提醒」，大多按一下就能處理。`:'',
+     d:ins.length?'':'各期請款都對得起來，沒有發現多請或少請。',
+     art:`<div class="ia-a">${ins.slice(0,3).map(x=>`<div class="${x.bad?'bad':''}"><span>${esc(x.s.length>11?x.s.slice(0,11)+'…':x.s)}</span><b>${esc(x.a)}</b></div>`).join('')||'<div><span>帳都對得起來</span><b>✓</b></div>'}</div><span class="stamp">已核對</span>`},
+    {t:'巡場時，一層一層點',d:'不用再回辦公室改 Excel。按「開始巡場」，每層點「底漆完成」或「面漆完成」，標準層按「跟上一層一樣」，走完看總結再加入本期。懶得點，也可以「說一句回報」用講的。',
      art:`<div class="ia-s"><span class="ia-fl">9F</span><b>還沒<small>這次不請</small></b><b class="on">底漆完成<small>＋45.00</small></b><b>面漆完成<small>＋100.00</small></b></div>`},
-    {t:'請款單自動算好',d:'到「請款」看本期金額、預覽請款單、下載 Excel。多請或比例不對的地方，「提醒」會標出來，按一下就能在本期扣回。',
+    {t:'前期改了，不用整份重做',d:'前期數量有變動，只要在那一期更正，差額自動算進本期。請款單、分層分戶表、Excel 一鍵出來，格式跟你們現在用的一樣。',
      art:`<div class="ia-p"><i class="h"></i><i></i><i></i><i style="width:80%"></i><i></i><i style="width:60%"></i><i></i></div><div class="ia-c"><div>NT$ 52,380</div><span>本期請款（未稅）</span></div>`}];
 }
 function vIntro(){
   const st=introSteps(),i=U.intro,s=st[i],end=i===st.length-1;
   return `<div class="sh-top"><div class="grip"></div></div>
   <div class="in-step" key="${i}"><div class="in-art" aria-hidden="true">${s.art}</div>
-  <div class="in-body"><h2 id="inTitle">${esc(s.t)}</h2><p>${esc(s.d)}</p></div></div>
+  <div class="in-body"><h2 id="inTitle">${esc(s.t)}</h2>${s.d?`<p>${esc(s.d)}</p>`:''}${s.list&&s.list.length?`<ul class="in-list">${s.list.map(x=>`<li class="${x.bad?'bad':''}"><span><b>${esc(x.h)}</b>${esc(x.t)}</span></li>`).join('')}</ul>`:''}${s.more?`<p class="in-more">${esc(s.more)}</p>`:''}</div></div>
   <div class="in-dots" aria-label="第 ${i+1} 步，共 ${st.length} 步">${st.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
   <div class="in-nav">${end?`<button class="btn" id="inLater">先看看</button><button class="btn pri" id="inGo">開始巡場</button>`:`<button class="btn" id="inSkip">略過</button><button class="btn pri" id="inNext">下一步</button>`}</div>`;
 }
@@ -1298,7 +1358,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 function renderHeader(){
   $('#caseSel').innerHTML=DB.cases.map(c=>`<option value="${esc(c.id)}" ${c.id===C.id?'selected':''}>${esc(c.name)}${c.demo?'（示範）':''}</option>`).join('');
   $('#contractor').textContent=C.contractor||'油漆工程';$('#ownerName').textContent=C.owner||'—';
-  const n=QT.flags(C).length,bd=$('#badge');bd.hidden=!n;bd.textContent=n;
+  const n=flagGroups().length,bd=$('#badge');bd.hidden=!n;bd.textContent=n;
   $$('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===U.tab));
   document.body.className='t-'+U.tab;$('#fab').hidden=true;
 }
@@ -1338,18 +1398,19 @@ function bindView(){
     const P=C.periods.find(p=>p.id===U.bill),id=U.editItem,f=inp.dataset.f,it=QT.item(C,id);if(!P||!it)return;
     const shown=QT.r4((C.events[P.id]?.[id]?.[f]||0)+adjFrom(P.id,id,f)),d=QT.r4(v-shown);if(Math.abs(d)<1e-4)return;
     C.adj=C.adj||[];C.adj.push({p:P.id,id,f,d,at:Date.now(),by:S.me||null});addDraft(id,f,d);
-    log(`更正${P.label} ${f} ${place(it.name)||it.name}：${fmt(shown)} → ${fmt(v)}`,d*it.price);persist();
+    log(`更正${P.label} ${f} ${label(it)}：${fmt(shown)} → ${fmt(v)}`,d*it.price);persist();
     toast(`${DP().label}${d<0?'扣回':'追加'} ${money(Math.abs(d*it.price))} 元`);const iid=inp.id;render();const a=document.getElementById(iid);a&&a.focus()});
   $('#dl')&&($('#dl').onclick=()=>downloadXlsx(U.bill,$('#dl')));
   $('#copy')&&($('#copy').onclick=()=>copyText(tsvFor(U.bill)));
-  $('#preview')&&($('#preview').onclick=()=>{U.paper=U.bill;renderPaper()});
+  $('#preview')&&($('#preview').onclick=()=>{hideToast();U.paper=U.bill;renderPaper()});
   $('#walkGo')&&($('#walkGo').onclick=()=>walkStart(true));
   $('#sayGo')&&($('#sayGo').onclick=openRep);
   $('#introAgain')&&($('#introAgain').onclick=()=>{U.intro=0;renderIntro()});
-  $$('[data-fix]').forEach(b=>b.onclick=()=>{const[id,f,ds]=b.dataset.fix.split('|');const d=+ds,it=QT.item(C,id);if(!it||!d)return;
-    let entry=null;if(d<0){C.adj=C.adj||[];entry={p:null,why:'多請扣回',id,f,d,at:Date.now(),by:S.me||null};C.adj.push(entry)}
-    addDraft(id,f,d);log(`${d<0?'扣回':'補請'} ${f} ${place(it.name)||it.name} ${fmt(Math.abs(d))} ${it.unit}`,d*it.price);persist();buzz();render();
-    toast(`${DP().label}${d<0?'扣回':'追加'} ${money(Math.abs(d*it.price))} 元`,()=>{if(entry){const k=C.adj.indexOf(entry);if(k>=0)C.adj.splice(k,1)}addDraft(id,f,-d);persist();render()})});
+  $$('[data-fix]').forEach(b=>b.onclick=()=>{const[id,list]=b.dataset.fix.split('|');const it=QT.item(C,id);if(!it||!list)return;
+    const ops=list.split(',').map(x=>{const k=x.lastIndexOf(':');return[x.slice(0,k),+x.slice(k+1)]}).filter(([f,d])=>f&&d);const added=[];let amt=0;
+    for(const[f,d]of ops){let entry=null;if(d<0){C.adj=C.adj||[];entry={p:null,why:'多請扣回',id,f,d,at:Date.now(),by:S.me||null};C.adj.push(entry)}addDraft(id,f,d);added.push([f,d,entry]);amt+=d*it.price}
+    log(`${amt<0?'扣回':'補請'} ${ops.map(o=>o[0]).join('、')} ${label(it)}`,amt);persist();buzz();render();
+    toast(`${DP().label}${amt<0?'扣回':'追加'} ${money(Math.abs(amt))} 元`,()=>{for(const[f,d,e]of added){if(e){const k=C.adj.indexOf(e);if(k>=0)C.adj.splice(k,1)}addDraft(id,f,-d)}persist();render()})});
   const drop=$('#drop');if(drop){drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#fileIn').click()}};
     drop.ondragover=e=>{e.preventDefault();drop.classList.add('hov')};drop.ondragleave=()=>drop.classList.remove('hov');
     drop.ondrop=e=>{e.preventDefault();drop.classList.remove('hov');onFiles(e.dataTransfer.files)}}
@@ -1365,15 +1426,15 @@ function bindView(){
   $('#primer')&&($('#primer').onchange=e=>{const v=Math.min(99,Math.max(1,Math.round(+e.target.value)||45));C.primer=v/100;log(`底漆比例改為 ${v}%`,0);persist();toast(`底漆比例改為 ${v}%`);render()});
   $('#resetDemo')&&($('#resetDemo').onclick=()=>{const i=DB.cases.findIndex(c=>c.id===C.id);const keep=C.created;DB.cases[i]=clone(DEMO);C=DB.cases[i];C.created=keep;persist();U.floor=null;toast('示範資料已重設');render()});
 }
-function openFloor(f,btn){U.floor=f;U.sheet=true;U.ret=btn?'.fl[data-f="'+CSS.escape(f)+'"]':null;render();
+function openFloor(f,btn){hideToast();U.floor=f;U.sheet=true;U.ret=btn?'.fl[data-f="'+CSS.escape(f)+'"]':null;render();
   const s=$('#side');s.scrollTop=0;if(!isDesk())setTimeout(()=>{const x=$('#flClose');x&&x.focus({preventScroll:true})},60)}
 function bindSide(){
   $('#flClose')&&($('#flClose').onclick=closeSheet);
   $$('[data-add]').forEach(b=>b.onclick=()=>{const id=b.dataset.add,it=QT.item(C,id);const o=it&&QT.options(C,it,U.floor).find(x=>x.k===b.dataset.k);if(!o)return render();const q=o.q;addDraft(id,U.floor,q);U.lastAdd=Date.now();
-    const f=U.floor;log(`${f} ${place(it.name)||it.name} ${b.dataset.k}`,q*it.price);persist();buzz();render();
-    toast(`${f} ${b.dataset.k}：＋${money(q*it.price)} 元`,()=>{addDraft(id,f,-q);log(`撤回 ${f} ${place(it.name)||it.name}`,-q*it.price);persist();render()})});
+    const f=U.floor;log(`${f} ${label(it)} ${b.dataset.k}`,q*it.price);persist();buzz();render();
+    toast(`${f} ${b.dataset.k}：＋${money(q*it.price)} 元`,()=>{addDraft(id,f,-q);log(`撤回 ${f} ${label(it)}`,-q*it.price);persist();render()})});
   $$('[data-undo]').forEach(b=>b.onclick=()=>{if(Date.now()-U.lastAdd<700)return;const id=b.dataset.undo,it=QT.item(C,id);if(!it)return;const q=QT.r4((C.events[D()]?.[id]?.[U.floor]||0)-adjOn(id,U.floor));if(Math.abs(q)<.004)return;addDraft(id,U.floor,-q);
-    log(`撤回 ${U.floor} ${place(it.name)||it.name}`,-q*it.price);persist();toast('已撤回');render()});
+    log(`撤回 ${U.floor} ${label(it)}`,-q*it.price);persist();toast('已撤回');render()});
 }
 function bindRep(){
   const say=$('#say');if(say)say.oninput=()=>{U.rep.text=say.value};
@@ -1398,7 +1459,7 @@ function closeSheet(){U.sheet=false;if(!isDesk())U.floor=null;render();restoreFo
 function closeRep(){U.rep.open=false;if(caps.dict&&U.listening)caps.dict.stop().catch(()=>{});renderRep();restoreFocus('#sayGo')}
 function switchCase(id){C=DB.cases.find(c=>c.id===id)||C;lsSet(CUR,C.id);U.heroFrom=null;U.bars={};U.walk=null;U.paper=null;renderWalk();renderPaper();U.floor=null;U.sheet=false;U.bill=null;U.edit=false;U.imp=null;U.rep={open:false,text:'',prev:null};render()}
 $('#flScrim').onclick=closeSheet;$('#repScrim').onclick=closeRep;
-function openRep(){U.rep.open=true;U.rep.prev=null;renderRep();setTimeout(()=>{const s=$('#say');s&&s.focus({preventScroll:true})},260)}
+function openRep(){hideToast();U.rep.open=true;U.rep.prev=null;renderRep();setTimeout(()=>{const s=$('#say');s&&s.focus({preventScroll:true})},260)}
 $('#fab').onclick=openRep;
 $('#caseSel').onchange=e=>switchCase(e.target.value);
 $('#fileIn').onchange=e=>{onFiles(e.target.files);e.target.value=''};
@@ -1446,7 +1507,7 @@ if(window.claude&&window.claude.use){
 }
 </script>
 
-<script>window.__FIREBASE__=null;window.__SEALED__={"iv":"_kqfkxqLsN84VMRA","ct":"OB9nkleJAHGyY1IVeKZBc6fRmPGZxgd24z34yiUjt6dbCIb2Y0gUcK3ESEgX1UKFHSk3LD0n3xHTYWEl9oleASL8cOPjnE89uqDWgtjL0gX2N6jaSBlNN8Dkoj8UBYo7v7BhElNSRLv0puUxihcBsDMXgDNjBpUIgPztilFKGZAId-3T7wp6weh7Ta8O4NRgiQ8TRz4F1o7ooW-xbz2ZbE4BVaPGGsXvCqZIF5rJJwDwxLJrYNl85yCuuiRXrvBY8UULREoeylQa0JWOhSGFSWJtQvcxB2fdSFcKpyhH_SFEEs_KwjUX3TZusgsY6gTLOE5-yzZkEO3IoYhwrGbyGrMTpill53E_qN8_hMm9BfY30mVRPzooPitV2D2qHBClVdb-LBISbSXpF28FXVwW8XamhkQM5lxvfWba4K1FkqS61WVtTGi4KAaNfEK4HO92luwuCWR4t3s3iStPLOR_kk2RhlEFjGA1fzOi46lXr7vbmhvmmJQ9xAz_T2MspsTM_ybkGoE_MMWKqxjjzOZoVVMfrieHydx5BJMGGCupfp_adDqK795ahtfFUyhgdwniXmgkybMYf5hyzfVIOT8Y5EptD_oXSGrIyhrEbMTs_JLWs2__EXpEr-qrMsRhFBSxx991QX-10JGr1IGyOQvyCfw5IF01jFuQ6mR2m-NgseK9ndxAj-xq6ikDkya7RbCyIGD0oM5w8ZCygcrWleXZq1Z1qFf4ecVge6OKkk6VlDJjEeUZs8QN3tJnEdltUNcuHB0TS3igkv0MJZEpyW-8L9FskhuPE_958zTGLlq4yItO_gtvJDwSQtwDCmuV0BRS3aLDwXjHMN6PnkcDQdYhkVN1AS6Pdw5hratI-ErI9hc8EeP_G_ybTl2qVACUAocpGDiHu6Xkmwzqx2fLo3vFZOB5aQviTJgSlsE8nH7RMVFJNWQHvw4sAms8ZSa_zj4ELO6IJkjQ2i8tkd1WFvN6XaatYJtyEA-YUlgmc0PXbUslCYpZpEtb4IWUP2-jkNeQT6jKU1khAQVvPVm6Q3KFGtkkcsZN_VjS4HXYt-IrTcanR5hxBcEArXP8U-F0Jy1eJxj4e5DrBE27_mXPiXZ84-T79nxCpehxIP-z7WLy2X8zoMGqlmdp4nc7_LDnHs9FRFKXUcdU2Mtz2lqclSbeUcQ2rbzutOjU7-ppI_LAaUNwl24B91pYfqnmM-iSVbPAAP6pfgJ6um_HhSu1G5PoGPRzKDvNBiSCLgOXNHZxSbCuhpqOVplsinKWsWoJ8y0aF4zwjJIzDYMcQmVbilrc38D7v8DVLJJRXtUrpK31ZM6fyd1lJu52fKi7JpQF1wWCJllMoqk_SPN7dDX8XeCYEUaxyFfV-h52JebNp43GM53VVF7fOV2rnaBjg1oXtNCU7okDA2EUCzy_pAZg6GZTd_sq6uF237yW9adgCJDyPeRBNRNeVJjOE-jddFyuZ5OeGJ2gF1SQxW6BnW9s69eCQlK_3wPj3QYL4hLqvNBuZD2M-zlq5k07sWJUiJNxRBvwldMIH019892JI9CFxrny-cBiJBhJmsEq-cSVsKPPX_xVytPpxXy263yLkwIwjVqLgrKP1YNfZfF7pyboIh1OftDdeTYsu7mOy08yKYuuhZMpQu3mmDmTULSIGB3ZvxiMQgIqtQl_NSAFsEMsAUZkmcGbs-0AtX8-croMdMHakMh9PGQew8NWGK2fKPPuqOL8v68ZxLkfbMmnAlR5rRat-JFdYUpeSRUNyL9oFg0IgCySD28K611hlhi-foxUdRsxhvW7PwEnk_DEtgrLX-YQs-kJ7MVCax-QwyXBbfyI3GEq6KY1d4U-lGKGG4qllE5i6aO8emt0mKjpOCxdIVkgtzQGHNdFLcdTiS4xB4jLcFgHAkYo5RzxBiRy0pZzYuwC5ECV-Mq5DLduLWjBqw6yxHk8jew6ZaSRzxGmed2nBpTbmYzoXw1E5I5tteK699R20ivej9QF0qix3VxuPMS8Ax7ftNr9IbiOSQrz94Z5Mzn9wWWDLFK7Mzcmqzk1MmN03cAHYJ1nlEUMcSJwbc5fqTePPC7jH_oqh6LKydND2JrXBKZIl7el2yzkAmY7-VCkzgSZ7r4o8K8_leDxTbXs0JV3wqJ9LoP8xfsZQUFg7eH9rs6X5IjgMlsSasxnFpMX4BThplf_ifY_9PtWPy0mTpmlqtLFJ0DN66nV454m-eGSuC35EDVB0ykhmp6vEyMY2WPqROe8sUREksKxS9FigYowmFyNQZOMdn3jNlt-7TWDEB_-yHvgy2C_X1wCE2IqNTq3-to698G_QM9E5dEVZc8jceCo5nZZ1YOWcC76UT7bv7lNktflFhC0bmTNXg_p1h9wHrXGgm3BP-kMPnrsBZMb4YRt5FQ9PsaZj2Q8fpzIvOxy2MwACKC5X1GyFg3rm7pz_3gxBaa-ZQnBZmVdp-wfLS6sGXVGbu19tj7YIKbVizSbBUKYJBCEbNclyGiZVlbNk1oxy4TGoI1z7n6yV0Qdp719iE2rfRwOj2Gr6Yfy5FqwohX0C4kA7wlYsns2qZQ2K12rWzH7Oc3bWcMR5MneBoZXpDJ_X_BEi1-RJMOzjLInzXEIpw3-jGBrXHyJ3lxwdLl3WFixcIPluJNlvkzcurbcXf062rtQ__FXhQxxjKbY8ZLI_N9_eaF8xNM11l_Od_8ETl7jbtrcK3Ewwv811oBF7LS6GF-MlovL90qVV6wsWF5ffc8uIgJfULB2QA3ui6-fFX1xO3HywzI1-jle4jZvrDgrXIUD-re3bLn2j8FmJxj71rONAdpVuyfpx-spRPFV3IhfAa8HEszfPhObuqNf4uOD0HF3HkiA24wBVo0jHc_pc9J6VV_Fjkms6LKC7NbPy8UMyKf9dlIVaNMTL9L7CcB-i35L4pQmSxKU_2mYEg2pg6oPqUUg83u643rtPJKYRwjYUXkV5VxK59saVEpn5fQAUyz8aZ3K_jlpwES8OkNcrsgQDJIZf9dot2pMqXqnCSAwSlt0opIRhDVt7lJG7Dc9DYI-EMpBvJrU-cXUU8sNAvDBKgYxQjO_TKhjjZg05d6URSpkNd9oJi9AWRcnjMJdT-5dN5kJ3fOahrk7Pst_696U-g37smGb43HYjL1KPSgmDxJXJYbFn1bHwMX0_FlLogAjlIy4TN-RWWE9OEqfrcaSKZVGNu96pVOznRdiVMkjfsvFknJbOJ3dyxgEaEm-bAsGgfuJ0tfszy79h2SZjnwrUlFpvKYrS4d7hT6fafq-ObM8jNLn4U_gUjsY4uQNX1z2BzM71DcKEfmYX_2aDWcgXmEMIgVDVr-2dxVnrnHb3ioVTjVmNW1ntEf-5xL45jqasSBkTNRXMzLGzpKyGc1BUfpCIbVOJjP3tKqCFmTtnwZCUUDCqfw1CquEAon1WN5VOrEyTzcTLZYe7fQBuoukK2rzOZffBMXCyVuz0C6XsnY627k1i5-aLAl4Vhit2GEVHgwTKBR-WTe6Z_ppAkCPnoiSZmoCZfiEzOKP2yr5OYdcP_TljObdwzE6F3Cyovv4PBh9lIl4P76omqfI7BqtAcboL-pNz-Ngzo1DdBEo-QNYjDqJ3zaQB3nd_reEdUMKMtFLppfWzzJNK8LXskWxvuLVRwsThAv5DHo88uYxx4HBTdKyXJqRsPebFrSDqI6a-XMPNbWO5ITpUd-bHnM80ySd-FWSIG1XCilhnC5rm28PtNzPT_syvE3CHzZiGk5l_f_qwAgjOacKY2skICSfNrHDojAbtfXxfr-qY9_AYeX2KSR4UKkCuvsv5Ldcnv7UDbikjj564gKPzyhuwBVAdDylsj4eYCD29rZ669rvj4EO7iFRN46eQhIxRZM8vGRoplMhh3BXibpJRZCTQhJk9q8iGhVZRUtr-o2cXr0w3_22eEbMDaFWP6rJbFNKa7PZ_RE1o_QW3N3S2wsIqCE6i9mHtyTSWex8uXPV4xFYto4Oqkf_WMIg0py2TKb6f7YNEEVAgJhlnU2Bedj2hpu1VjyLSjblRcn4t5BGbeD3dR25UHd6eo7xHRiKMgVJt3do7kjGP-j80J5Kpff3cMqsSgKO6qXCI58lyGbGipM7akQ05u9Po4c3iWFrGONXqTUg-bmd1D3zDWW9c_xQiINgxstPYaNAMexFT-6Il5Zx8zrRmTrD8ki4mzcomQsGSVMaLLrwuk88vAOrfEXTuEwuC1UGPifGnbfSiT8A4B9WY4vdiAuyym58dlYT7iR1fWU20AoWW7nniegHvcIk34gL8rOKfUkTZyoIY_iECoJxaDLAaDTxcm-PRzKc28vSQg_dAPbURHqTCLEDO2Rhbd_yIiF79VGt9n0IR1H35XWAsTeqz382E2mPvkIw_S8c4r_ib98EZNxr0v1H73X60sfhL-vhw4rcdeuih4404hROhwFiTO4oS0gCTZdY9eZQAiVXnu_VRTb1W4dY1scW4ybtlECz0NKb4aLuUnEPA8MGs_WE0N5omFUqRQOs6VSglKCO15F8ewsQxoCUcy1micMZzoqjzYc5U_P65qUgkUqppxvfQUr46bxqtKrz4nARkRXNwlbscRepQiUX1Wgi2sTqAfeLgOhAiTfj29rFunA7RIferR07BD2P0TuLR7kxX7joM8OX8418MV5lttqzY6H01IRLMcAAzWriJDLHINA7Mt-oiJv73U-qA14AsPqCDInOTNN9LQsJbZHeWyyd90P6Uy81VL1hF8YU-PqDiUBRmTqquAzH2Jbyt_y9t0WEy32gKASJy3xovU82Am8sMXSVBjovtscsx5_eCGodjP7yQlUvG1vwVTfgAveSDWEJUYgyNwCeX_nht6Eezq08s6ZZHoh_kcDbvq04PZ6XqwNX6jBRY6zl4817TFFdTQQeH8YQt7MppuNMXgBYuXC3i9KzpNaWc0GqdxESENuNXuVrvO-_NBGUIC_OkkgMfa4U-k5qFIdpAIiFr9-JP0iMRwQADlhmjs0oCoCpxARFcCbk5vawS-AgWmarz5-QdBHhiX0tnWz1LG5c80sTSvhSuUIhECnEJ-6o3uFqFt1RGH43NNp_D5JQlnPh4EvfA2WrVYJK__-e5v_yZeHtbC1o5aoHdjktPbbeWOUWmyGmDBJL8LG7QaN_oG31p2G8juIcTJV-s35ybmvLjoNWfB8es6e0OVtGULMbH3xQtW2-sTzeJfaXlp26ntu9dw7IUMIYrkkq7Zvd6c2FK9eLFh3Kwfn0LaExHBArSzchMrpWFyp7dPbejezE6GqfjBJyud9bhCk1QfrfQjdkCdTKnuLI0diYx_4S9N9CWQ1f_xvcgvrgicfyNrypN9c5X0ulwW8OB7BXhFcITW3xXs1U3itdXERSYtx08Emv2h14bZYpx1qHUOz8LIyPF0FT_EYqHlyY4ipXRvy3tAhMo_FYmYuD_sFHGHQ5q_uYY8KosW-F5KfC6cs72OvjqGbaNTamMS6Bcz_gmgvOt8QhyQ0cnKm4OG0H8wd9VzezqvwCk8BhmMFuPmJ_UgtYz3GH5Ci5smmeZpvHMF4mxjj2sD8C-xZR1ojfTTjEDwah525nCiY63ak8jdpT5im39YK34WN_2FpWw9f2hn9cnBh_DZ4cC53Gf1By8YPxDaL0ei11k68spXHcFniMO-NilpnECzHjq6opSeJTBdkJGgI3xGGjws6Ip0vKvDhjcB_zCNCTGTBbGeWCjtsiqBPrvlIf2v51KNNEuWVweW3dn65aDz5U4PyhwuWgGfCX7EMgATjkZx0hoYAV6G6QhGXmIPSicXe6COhjvFUbewkz3GUSQJaThSMEnMDrXq74FHg_JPCF7lLWjrlM2qUz-7jwMIbOlu0HU17NURLQA8hGNRkTrTu0S2TFzevhGPBMVaUnNgHNq9uL1G4FS4LPKAVb6wKOY1Sg5813rPxuv5LeuCw8BsnDRnTh0YkFlFj9v8YYmQ5vi3EePbUjDiep7RVio_eCmPLA6JyNXt8a0pSsfizLSdPSXIE18HC-CrAsmNCQTLGmgWvjOp8jKpL09FynSm388GxHX5O3ymziVh565Sq6Au86Dai9WJSIGgLvp0MS6hqxlHnKN1bEfRD86ziGAvk09XLfKq48VZO_uMFooC55aJ-CiV4ldjPvKKjm2jEOtyyG3a4P8z8kLbJwTR1AL7K7JablMv_UcJwLas-g8-aANQKqq68fnE5N8GNoUkeSRuUZhMds3_FIzqi3VljTZvO4yKVZ1yaEri166JnkPsJ39uNO9-5cnMwx6qa_NuezGmCygs8RhJglWgp-36vbiXTHS8CNROppHh-v6osPKVM1-YD3KzQ77s8NVjn1cbFlKgqeNySsYpkQ1VDZqTiZwZWijCIiWwl8Kyy-DGJGdHUa8gYSl6A8grno3BTfT-uLKkIGK8KvHCBpYSOSMbDITqZ-XlvD1KC0xlkjINTNHvYj58N7cNCSm8NjSn3L0JNXIknzw_BcvSD6VS7CWUnT3HFExM1MnOwmY5FJV4rkDL9Julz4JNSQBme0kR9js_hx19rrG9W10fWu3cNBJ2-cq4P08MCinLBZH-hbhEbgxZ714nM0NP_8bNaVWaEXZum1L5g2RJK7RYtWZLF-B13Bq32khaBcjBugpgqAc6ipvg3TdeFOYmtqj91vW2OOkhq_DU21Dzkr46z1WmuNHGwDPZspdAXM-ZvW-eKKPR90K1r1hS0_HPRaGAa4d73B0IMklh3dcVkEc1N6U-d6AqulHsbXbctN1U12ddwqDKJ6GWVKfFLJdPrB2ddj1MF4hI-3gPNrwpTrOhVqYcjb6RjjZNzRhIUiM5vYd_LvqEQLb8FpT2GbJkhHsa2usCZDs8UPogeZRrBmjtJWhiZYpu0rAXOyXVrwAqeNVLJdfHO2HP0nrBFaCI6ulXDTs84Wl97euJcEdIbp0LhYw8gbVrdlPUeuIP4HW7oAI9FYtHZPDw58QndGg4NjK9Stc_NBlAOiamwJ68OiF3R2sugqWR7jZGWg1-iOb5Mt6bjbW45Oy3PG-2UwPjrhOVhga0a8szB378ihEuPLBGwJOJTGqqyG4euitDLTIcCp0YbH8gLuTf7eaXw-TnUDV8j0vDnlWjFMMxEBB1PMHqVx8oru975YoMbWlLKrC9NLuyeoa8bxpQgrQ8owTeJgSfoxFMMNOabUBnUexlFQHw11HOtSeK5-M0qNqo4cAA2M9qrcFkoNzS046yywAoarVL-Qf_brydlbbdkajvBPqagocoHqgcj8ZFZM0gu-5cJZ0BBIvXS9WHFn_tNYm1lGQYXHPRZ4iY1ADk55I7gl9MNMSCSCJxw7XYWawbdprLvEuiweiZ1KmWPCcGzjT7C9aRHZLgGGO_xgyuwSpz5ndomoTMlrDVe7nW-s1RPN7-7zhw2K-iSeicMnlkrzP-tsyV6QKWNCmpmBlhT4mKAcSDIiWYvAYS5CDwBckdr7xzhTHmGgHtjeWrtu6KeN2IMGK7lQkrlK3I7j8evmshHs0bCTEFjfjJZaNMBj10rP9vYo9apvVT8ekpS89bZHi8yCCcy9WOyGabnB2vrAHUIhdkJp3Pc4sdEl3V4XjPPT9dj3UO9KZfk4eTAwc8miHfbMafbd3DXXUGgNJbhtcyydUerRWAGIqPqpXTc9sYBCTXejXXzipxATajEly-KzJ1u_zvlg25-YRfyuBAp0ye1_N6Mj4FlKnxbmfbuUqojRMQ4e7frHg1RH2ad8A4ADzirEDFKOX48YB7gpgbRBMp72mQbbBWnj77_25rAUjH0g_qvOVgITwt0yMOjPQv4VDhqAwdqTFU55cjXKetuZFbtov4S0CWL22vtAKoBrXYwdANKJyyriOitWcaQyNuEv44iaVGdrEVpRosX-3tKBJvRxvEHFN9ZtfwhjsymNz5Otbxd8OrsG78TEjOqbEYG8FPByR0G4WlBPB35vnmCQ-4n5CzioMybDBdm01gmdW_Qt3teoLrPhaGKHKM4AEpDRNVMUtQDI_FQF4YIp88w3KaT3JIQ3mQ-4tVfD0AZxOk8Bqu8KSasR4rfHvbzuSJplKbE9BojmmdHtZBXLXx_ZXcyd-BWeDBzpNeKcJ-f140Rm8-1k0OuKvq7nn5yvov1rDa1WUjzXIbNMsyTSH_ir8NpDV2stGfkffvhBLzB1FFd9nGThPfIHWB29RAoiBS42nP6k1kGbzVKH-D55Qs96_8FGvh9rIki_FswKPEDucO62N0DN612-besyH9v1faSUYM3TiLS4ForOMEmiJcc81FWboArvVqWn2duhnbbyxWWTygGtsM5SQ3gtJlMhkKVxYChkYDzzKxei8esh75Pd-zld_nnITLBLraynXf-cvviTkJfnkZmfa2lI7F6_y3qN2_ePR_0dQcxcA1Ow1kfuD6uJRNSKySFCAklMkYSb_iL_WUalgN2XVSJxH7oy6Y0382pP75L76i9UXB_m-okH9O6Y7pb5MLIzTlrcCaHwwMX1-xrQNcVOLh_FOrytBPwoVKzdjINiKEsZrCII09Q7y9q428plAXYhChYNziXkjAkU8lvtjTXywfv252RUfkyzivaAAb50Kl4zQOoe6af1uKkP6la0tL1l6c3WWstUnAMYeKsHSNUFsV88PW05npUEg5_Icfs-nRqJS_8D2Tip7pbxB8SJ-IdipgM8O58awph6tvGgHdhI8TPPbldFMMcM9DrhDbdPrBMMftMPNg-rYyRiTNooualdasN54-9X8LfCwRSwwxRseHYLIfxD4OBXqfb7oeIRyqzEiitubBHx7ViaNj14iBoxfKUFVGUc3u88CeWQGdE_BcfRRLGXy39U22DrLRNc1AF6sLitPCVTTkCv8klWq7CDkegMwzLv3hUyPdjhKKGOAQmjLUi9T25lm_B4Xr2WCBwhlUkmjbi6TBFSIRKsR8By9q621-Cyj-jRv_NtwDZwVvMmnrsyyycKpaBInTzkIamIcL5jYkkkP6hccp1lZshYo5Ph4Lj_S6fTsoPF1mv0fm8z1TpCVlWS20_EGeszdC66cNNTWVOyA2dn02k16FFTl2d3ivKQKtThBLQgfBBc6vAMC2dNMQdNIfB6YCFTsGZRRwOVinTHIq_9eFti5EwcWtUVta4brrmE1xX1q8Nc4eS33tVwnNGKlNz25TIQowacYbVX31qpekPNVAsAFaX-LdgKwHdfI6_jojsT7u2i2Hg9deRhUGWb2BZk6g4GauyY1VM2QSwPvCoW_h0l2PcNl1bGzyPMA-MNSOxGpp1KasliA-nyFQThxIzW70gnlDSSMb2w2szBZH0BOGVrQO3G1bx24xpdVw7cIV-aBVrEtzLQbZ2lRqcHm7AF1Pw9CFuNg3rW4wor-8CXJTWOie-UhdldGQhgu3yBdY43Bz4POLtqejq36BwCfKk5mFHpQK2KRoQVbbkpC6KMnapYa4RfYO-LdspmMBDiF1ygtGEuWNLSWG2DaYkLYg1NbOwyHF0qPxRXhjGMJYA7TtRzmO65yrH_YVy38nMIGa-RyG6uALVYmUPIykxAkcOx4jA3QhP7JYqnWpWUFzsJ_qeTcqnV-zNdrfLn7tgfgFyfRkn-tLAJPmDcLiVTZaGTsbcwkH7ug2HBpzpSVEUy2cT78j50_6c_ioCMQxwNy96apEHUrSUFdnl40mHIFoJZ8uPy-bpcDzJFwmIHdO5IKj1oVs_sHvJo3NwpvViF6DbfnnjBG1zMt7yxFD45poE5-dqbcxgDuqaVS3j53tfGPONPx2NhMJ9sVVWuHaYq0F4VQSDyJcc7Xmz9q12Nbl2fPNVgJ0tbuYiJkSVqDs0RTEHb1gXNuJpsQigqCuzEI0xWLSKSfMcm1Wcev63PSD13T1XYfdDnoNxLzDYG2_0Q4eUIziVhO9Yz9EjH--L1-Aqt2y0sQlU8IU1SatBbFGMkzacfbQ3SKVM9bdp-x2zpIOkdJtdmUaFqf-xpL6frf-FfTVZ1DQUVwQOIfeVHzqVMMTn5rFnjv0cfI4S-L8QxvZKBxp2SYgjqxE9VwLgNAvMX9eYbSrVB7m7u009wmtN1Wuc9fXnoR41fnllaEN4zA-aVYJ-mYwxnqct00g9emPn603ZsF2xWXgQMbMPA1Ns4I1fCW3yl4Oidymdfva_Lxd_f37Zrsk0ttlsNykcR4iCke1yrJSjpDQdHqrOI3U5cUZsJRtYd0CJCFrtWeCoMXLr2UXc9uuCwOBvz18KQlQJ_JdgnKMNIn6gaz_GZaMxHD_lwkVlIpf4niDsl_I5oAndPQzyU-ZtvyjJx6sx4Ayvo1jSfCQzbVW3QEvfuFgPgT-jwtvbL9b52t5Tpg_6Kq1VzCuL4k3eU3VdtbeeZGjxmmALW46KbNSpUKuqQmwW4l7UlVzf5VAqDFcI0Cb109fs3XbVsr3kOOKKJTVukPZcLGkWmdffwEZDJ3Q4_q-OYZ9RNk8O9mTLlLnsZZsiuzFEMFC-wxszKXEV3tdUSGolzBYaHrqVBaApY8IT5mJTAzWwydJqOEs8gH5kYHDAEPR_Rt8O1tYowrERmCksf_W6p"};</script>
+<script>window.__FIREBASE__=null;window.__SEALED__={"iv":"YNhQPPCBFskxK9Vr","ct":"7abOhvV9K67deMSFGk_9vTGW_X3g5pbnIIRUTHx-BSPwV9SCIrVdhl_KYHpPM3bz5b3nP9sPy985x51NYk5mw-FvLyRP9qTvrUa1mz9U_Erxe-3oii6xWjIzWEuh1j5ll6azdOfmWzN0mMFyvnSmwOIKR6qJJg3WZSNwtCT8zQW0-oflPE_4xzcvBbx7wdJJ-RXNW9YNlXtRr9vTierIVM6M8JU_VnR1MjyF6UCqiszNlMNd-JKv914cDiarNQiDLoTJYPFPBzQMdbdT2PsgQhPWphKkM2EB6O1YIURREqIB7Ka59awCMm9JKCkbz2uX_S2dih3hJ7qmWQwVgsHLDVKTozi_1fhJcPGttB1NA9JVrg_AwULNmWhhmZiDG3GUkMxdjYXmgNjKU8DnxlAGGA0ZoessgTNO9Iygu6XxLLTqppbqL84R1C9Evh9e3kvpLHydHbwrfo0gE-kym-rKD-2kiFd1lmEMcJTTwOa-ONjEvLdL5JK1RZV34pwvIs7eGsgbhRDhdCOvccoY-yw3Ge0bzmDHscDn8qKmLSO1Go5YP0jvysvJY_OBeAqk-Rkt29Q2x0TdYkdbBfhn8NmF87HmIyfaQWZO5Dbwqwbh1Gf5kV9uplQ1PdB7ycI1r3TkLLOnbNR_iYZW0VH2iQjShBbKAeBolFVDDVWcY2w0npOddftxMBfyRB6U7U-AmCbX_fv7Zs55W1syl9v0_fKIqSLxRmdrKH-rigTaSlGIhKcFX-j-AxlmKqsRGqS7DWBEnxADMLzLxkFJDqLwxyiriIrjDVZgysyl5NAcEwUz4YGzmaiGgx9-7FgfH_xck4SYljzj4OaamXYZ8jHTYg02dyefIADjYVOIK785I85DXZrzg9kDuCEc4j-bWThx-48yCNxlfjmmlFQe9py2ujLn2UTtCh6A0lbtayPp8IAxpuqPVt9i0eAzUvhli7-SOaBflhw1SY8ZXRznb68GLAUhVjDnB2yrm_d7hkUyx-HR2NIUvYoVmHsHJ0FYiFgVbRtDBuaGctS4BoDVAFN1vUZ62RPVPDxOkaP5uDJp3mY57UIvruzjffGw5_fEJBJR8hqgRXfl7QtwiC6hCiyaxQsB3dSlcZeQkLDzSK17vrHTFIwHygfGaKn9087CnHLhbsabxKi1lEUIjFgG-70goePhJRx5gZHeSYhYZxUFqcxSjxQ8k4dsoXMBkNZ-h2eWudhzW9kU0SgYpZNm_lw_Bq20qO9MUUyacJManw5KdTFUkZM2oWILWTKz765N8k7s_l1T5ci4_kYfAGIMsg4pziAzxZKg-uZ4iDXP4G9Hf4bWrEPNJq5HPh6ZVWwF6NINTdbNQqSMDJ4Bw8h2Zfo3QktQ8MT7weoiNoY0jG1Is4W9MguKrjwjoskiml-iDdD5C98wXkm5BjqSapT5ba10e57B_qBIZ8hDNYOoF9SLnfNrDD1ZhbyDx_y9akjxJu_q96D73FFWhXQGmClLWyux7nGD1BxDoOS_DkeZFmXhP4SDwIyEJ7rqoxIN3rTJv_xvEng2hpmYYscxN5jWWFMueZoAzNq7UP4IUVtgn4jJwvlmUeJIjNp9Mbzo21hun1iY2gKQZmRnNWIphwfwaU3eaY9uh2J8CV_CUSBKsHD4q03QqTLTr6C5EbL69YMYXVsuYsqrCLKYOzv9fZiTuT8hICbYQrKTnr3GkhvSRmxBd8fqZm57P8w-82skVBcWt0V23GuCcycJdrRILIW5R7TbM70utSdo7kpcZ4inqldUxKnwwaWDnvXHjPF1YUlYfPP5JYbEpsPtZ-mdoIb-6LceaWSpmyZhx7H-2ZRZ5mAWMD8zKldSVcFa53U508rOVftVrzSIErizmfL7S1ruHYWjHYOloMdAEp-0wI6ZFPlffFvWHP7Fj8WKtfgw3HqF807HypAdIYSxEp-ymoNcYhyebrdKYYTeVmoxf0i1lAwPqLxt2kXaFj3qnwLfK8fnJClslmHRK-PGL1mHWCQEx74albBWkwl5dflocMelMoZOoAbIis300hs584zlpyUYvXx-RhoQufkRdqUYNXq6lk9UMhbj5zDVdEBKltwvmF7VRw0BN7fff877GUp9u0Mt_hvEex7TadmC0DVz6XqTBaECXMx-4x08U56zRGFZ8N3GMsMZj7FuBGSi9pwIEBOKSLsk1lLE0vW6_PBjke_e2fBMgngpylnsKbaAnm-2aIjgqvKu55mJmmhwA9qr665xllzmYElgsbYY-4nTSPNc_S8TkNTUmvrDLEbO9hZj7O4OgN90vB19AFcMwhssA16225_etzj4n2IikUB6gBD7gTD5Bya2lDF3vvlYv90BXTDYPwGKmQAZJJMnzkGAhffcCytfCSlDsem24FTZqAhK94mIuWCbVBhB9i_8uhhUZ1xbUikEt7z1rK7ig8ACUU64IFHmSbSGj9LAV4tNNPkRNwnHdZf1yWCAAPfBxEuUSu9UakpSzL0y9qHRH1obKptSzE0A-gbcAl2RblEsaMusWbk1ZoTKKKE2VQaEKk9ptjw-d1ETxG0Snp_XHZRV9IEnDa4fpbOFvfpg5O6uAJGJAbivIjJD27H286ANlxHFuRDs6rwU1rb2k0y69p0Rcxj6aVhgqMoulg1mEDCAAbwfRn5D9uPh1r4nfbWNLqnZW8UoZvB3UJtIVbouro2QDhFbdhUkQqiw4HGqnbdvW2S5wQdnCY6CYw78s_Lj3cdXttENVk4AzJrzYMCaokdWj2jyfsLp4sbXGxI7WAfAXiYiyomDkBxBscDcnd_rIvrH0CQWkt69BxysGjWfiVZI_FSwIal732OSKqu4BDcvUPSPDaQ19DPgJCsshcM-Omy67_23QWeRmfVv67LdwzDaD8lpBYo0EIDtDVh7WsMmpxSbK3CmYZjdLnb6ZDqIdm-O0c7USHgCbqFMZl7BmN2uZKYBWaGR8qxuGCjoVwsw0I0qod2L4tAmq4iYU9P8Des9SB3azJDhfrORi6ojatHRfFtrwdPfXELefoC0ZgcEE2QlYNMxcXKrxebOR32Jw1HCsy94-nYvzsYdWzHAdZdUrb3ClsD5VI8_SisnQc8Q1RLflilKE3SvCRJmPtR6fXdMI0QSmXf-CZ8vHGpZxuWWsUDjlFPA6_pMfalU-kbZH12beL3BeYNA3J2PBR5XtG5Bh2V31APjpjiPsnBWcJs88dVWmW4Jzvu_e30A77neigocGObSJS8dX6nkfEMNT3NQ7JmBoto89WFBou3xEGcbMG3wM68FfMjg_tIKKBvPUyRUSq28G3Z5Vl5SKUBvBb6sWxed2wI1y6QpHcy7tZJniPbNbg6qWnfFRfXoUTP-jMDr2w7cc_5qdETltF-70I0sfDmmVhSzG9XqCufEbs05bsk5UzdT5Ibw_-ZSrAiGLRPcUsw0tVO0qpu4wpfSZH73bBzw1vfTN7PyQXk4vQ7bYWDPFvcf2n5Nlo5SEWLSnmjTHC_k4tm5aLUfSGglw0C7K-CcgbXsM-KiqfLds9pJJb3amfAbBB_BAyI8Sj88OOVgdfkw_JQ99iC6dogu4ndWotplsaYaerMA7KXGK2Mq0w4sOHvSDeuH4rRWjxG8QrGyMka73s10gaI5kU-Vy_ArCixK-mSpeaOSv3Jr8at7lXWtcj3U11V4gz2x4HPkr3AxkOOEcZhrr4mZAWho7TE_53SnLYDO5nlxT5l16XbyaTKtp44jGTVRF2HJnLf4p7JBeobKGZd2iCEvHIXz7IjlqVOMovN54Q-SXv68gBB5z4WrzpRtxp1sltgMP8_Zf-14V5CWEMW3QtUzPyzgkDey118Z4_N9UygfRI9w4vYFmmvxuxFodcEoFv6JQYMvp9eXpOuGW_9wxEnu9M1fNeIzMbAQDivDgpXUVDol-nG60ius6S3qVNoe7i37qPfE2YWu7lXSjMpfVfGhP2X2H1jv-vyRTx_NMA5qbWFdLj0JZuGAPqyXuL5Kg5qb7DweZ7ivBlWL7NcNJvmfSu7CGuOgSennD6nMFJYItjivTbyYdVfjv4WC6J7mUGpTwX7SCjk86KPVDLEHAARt2FLp_6C8Xm0IetyT10NLJHQIsHuWsJHxJFnZt7sdhI17n1q-vjqRWFvca-sojgRbDbqJDks4FsqLrVqV1e_v7xBRisVX_JI0Or_i5Rw0EHyQGc1rW4OW5fmYI8NdRLJjfN9G70MmOYFb1BToWk5kVEdmwCFRfuTuKBS53JIW5b4Hsdba1wAZ7vpnNZ_TBNnJjcIw9oFOhnifFjBr09DDXzkpL5PtUb5eIj0ti2CllA10M8UtB4VfvDL1bPMdWEajgQCzzyr4QBKilmNxqaBHJbpz2nI00vPPdhQ8BVEsTXqPexR2OTnKdgN7a59D8_xR55pyYF5GEu67OcjpEhxJvQmOSEk9BWrmflDwun1B7NGrglIhrg9JX1AJ_RbCe-RdaPjO9oYb1AMtrHUUaDWG9PsVlHtEjCR_sS1qzrC_1lYITQLRCSsMgHzNBtb6RIZ7NuV-mVzk8SuxkA3nDipLGVdiC5wTomONUkj4P8rTimVfmoMYOJZIhO1OjjRLN5TctZijRxG_gdWdlXCjndXRpQq7knZjFQxpkkL1q8VzKH4lhZI1782BlR-SJqP_a5mikMpFj4dzNlBAboNELHWfnYR-y3J927PdcPomP3GPNCZHeJG8b34Iz6KLUiDVFiUheZOlNuqYMMtq3TgG0eoHECLmQKsmKnt4Ku-VEBVPuDCv4GpQe7bWKyv0UHDL-5krqpFU-DurpQI8Xm4F6tnxoFWy2NWlkeeCxxdqsou-0U3-zkKCQl6VskuaPX4bKxfP-FnFQDIkp4NWmu7kP3CCWin_ja9iTeZTkC4uq2dBjGu9-iO41sdDJjSdn37Y_64KAkU_9f77fd8q2pYXWyaOEMHpBlhxxtwo80r10VkB3PLZpOxMmU3qfY7jWOP8XslGF8__Za5nHFW82vfsJY-erVMxeREXUfqWkZMro-UOart8Z7ne8UrVbIoa2TSewGFYjQoFOYwchCrU5xVLUrRwGVz41yuBJ6m7b1eaNmHw_7iMdeUJjUwhNA9CbMfEm_e28MJ6JXjNqK3-6ICNXONZSiF0T6W955vtGn7JuzJmKtkQsRoELe5znnqLHnh41oHE1ed605Yp9Dx18h3n5ynCHmBpoZ5RK1t8VDWmdH9NNxcjpopKWYPmRFcjxEGJe9Vn9keOVnJi_PMA4O1goF6g9CUQtTb0Cvz9RIQO40hQ2r5Wpq2F8fDcifpOAkxxWvgG5iRWTEyKQNmMycd3UpxHn1SeWAMwneAlKrgfYAPEZW_XeJSLy7fYQlRveb6lJ-F1XUFNwH4LoSA0oUWLgez5tUK8-_Bhs_bWT8f1NwBE_CMDHmxGduL8f-YT1dBhpTfDedqlcmRdBrJ9dPKbNHqkl4PVoqBC8oiBO9p2XqgEwXIYJfZ9x7XVW-QO8QQDazaVXv3lFpM23AlksVHZlzmoiaOsNuGl7i1CzHAS-CEogPz0883Dlce-2kfgUgctfbcZRkBs6H_OJxMsP3rku_PiiyKQ5GMwlZxuw4VOQL2ZbBAeF-2TxQ_WAclwS3Ck58WPKZWxhre7CyxASJ_D0GygsOp_yMEmRyUBvLNF19LfpOrQEI7unR3fjnBcAamye3Uwj6-ybOnQSDLv_LIXvE7Y_8kqICJgH8Oy71OZ1XtA71IRunuWNXfw-bzuAw_swcu2Xbti0-lf3GeUVgrseQvI6V2Ty88cHfuQewPquLvDeMHyOl13A4tFf5_JsSCEeV0URJcItDOmKzjHVmFnbnODC7dvRZvzCbWH4U2xi2rULicaOZZVAk6rP3Y2UbX8SURFLiDoDpnPpejJjg5j_wyKPsf2a3TJIMJANGn7dA3WSprEoUtNjAqqtGyvHEzJluqsdJQDE5JUClIpoF6R_p9yGc4-jE2PKoXE16mw4UaRdM42OpfPjg-jG-avOnRVgErP0vRWaA9ASh9iKN7mC6ciZ5IwlFNMH3Ze6nAkopWG7sHWoLAy1i-MvnFVOjfrwr4fT4j44HU4ClfmZ9MQbAQXrTLlT4OhsXbOOvjpuEGxkDPNaOfF21cBq7vY5fZ74JjnqfwkZr0CaADNAgLVJmL3WHR1slHqp5NcmtHBzVwIxl4ipMcVJCfzHVErezcFgsbJwjV8mLDSu18ayBtd-jQpY2jWBd4k8bGeU-SntKA9VriR1euv56HaicH8Ha3Bn9I43MrgR4-urLE4BTLA17G-fPHsGLB2uHh13qwferYRrPYByTjFfRc7A6gVvL6PkUDLjJkQ5UntAI4iOpH2LVwRmUUAbNFM2OYeG9dyvYkoTrnfF2JQfy89tCy2fwU29VDc9abZZPy31YCAjEdhlzHc0ZMq4gbqI2MGGAqnxd4NoY0XWoa0Q68yCOpvU7vyd0IXAF2K2gJNoUUuguW4Jc_LMM1OXMWSPoYky1A3CXlWIR_ZFFrzQ1y06w_ib9jk4BbsX1lni27WGadO5DvCKR-Y0SlnvR5FycaAoiwnDqhiRNTlgoezaGGiJQ5rZy-xxSKivGgIlbdcNnjpgSURxd4WhwdDuEBtyydS2OqGQqBUcy1glZnYrG2VdT5uVYysqLdbGrE1n9TaOBHS7OXo67NKlOwFJi0ZzCaGKXuWdzvJB3-FB13M4u0puDMlJaudEOQF_on19_UYSkcsS7xvGPvYaZjaTrOtnma4TObalDx64QP-HZH78P5Oyle4qyzHQT8WxKnNJ257BdHBNCjuytxbPcLNYCSYYKxwMD-8Qlpro4rG8u8vAoSSWXddtgBBYmSDviWIEk34Tj2QfqjGlZRjoaAVY9IG5gAuSIDNVLuJQ9GvALxuh5OW_8UEYpQQ-NnCnEPZAMVLUxU4_8iT-Bw3u3x4ZxSISapidG5TeWZ0im6xL84NdqXeBcPJh73MKUB3aPGevcj23L5TL8paS-8bEFvvqvaBK2Ms5B_Tq2hgCRv9ZndAQpHGeeAd-M8uFf-X5GVJVZNr189q2K8NBHZG5y4Z-_tiWGrrZcD7VY5jwRS90jqi3Jq2jMJwErn4zEBiYTv2yym3ZYZwqvR9DFgh5CbU80gsGKrxlGat2ZifZlAh_ejw36YYpnRhHuREzoHz9JKkJ8ws0edvvrT91tFIW68GaU_0KziIlqQ9XpTzkg2GFmz26m2Vd-FB4d3Hl7Yd07Io7LqEG4mnUe3IVcP9hq43vH0cOQotFjhsvFbwELDv1rTYZIUPBjpQ4rcuvooFTf-feG-SvVA-KCdMmCP1mFGALjLlF-X2gBr4O0h0Mr593V0hgNIN5uAbN3ILXMEkhcr1SSgNrbB_5T5K6_mAdy5aVTrSQ_zV6MHVUhLcZ6jg8gYbId6eUMqol17tfsLqIkF8TIUDMhSt4-FJ8BqzKVD6dxgg435ZinmiLgo4tJ7VS8_xVxDMCmX6KaVTG0dSAFZP31W3aIrLuAI_JpKTl6cBIdAHfUsvKfTxeEk6QwD-6AsMkMdJSA63dowqPEJxPnsv6noUcQHsMNTfbNAg0OYiMXUAc5ZfE4C9WpnKyeuAu4xmuK9tOfEh7JMe-HSIqVl41sScDcti0kQ7lnfQmh2qZo8VX3EP6J3UNjyhyOPCYvHtuOihJjcNdHKsToBtzr6CI9aPx2QD7ptiAmJOfoKIzLcAsU9ySsOC2bLbNE9hJ_IROIBQ96c7jQe5G_YpZ-HWGsFenxKspZxjHtML-dKa_NS9w2wSpAQRib8txbCJLeI0Y12aLqs9Ze8qnOC7klmdUTPCUVFEC0ZU3IXWvroSp_sU73nVFvcwUXuBWN-fNxwFjda3q3ZWVdnXi5-W-8Ia8wKshUH5nknDP_NRXRlgN_gh97G09EEwx_cfWOtyIIiPcoUnsaEQmExC9tRZI_rkQ67uTJroKDNzbzRpK6IjlfI033qsCgg7vN6UsWvd5UNUFJbNsJXWN-Wt4bHIcbjqsHsmGY-GwcN-4SK2-xk2oYQ3As6x3Yn8DXlRF5Do208sxlpmwswT62CSpFVasZxloU4W-eamwJ3__Tpjhy977DTvkzei-M6z-TREDc-74ZQplYxKOxiGDbl0vsNxOfbGLp9UOoTa6NKqeIKhE0DTT6k0asFw_iOMdILCc7stM43vTJFiQ0bN6XYGrQ7ymPJYP1vsoSQamNKl4TWMIqb8Ds2CgOUmQJ3NPlNhcOI-mxzqbUe8POgkfiD9tcq6lt15sed8yrRL19wyHMJNYUdwNuoZ2-GcJYSrKkG-T394sj5KzZsL-DeByh8ocKydwlRxGBjAJ2WU6T4PrLSySH9laIWNFXujRldPUl9BYL4FzQzanlHL0xpKRExNG7Ba7Clcbo_I3NgRV0Lw44w9LFBNiP4OkVL5m58BF6sHoMRkz6KoU0DUm3TCHZjXVJDTg67lBPkglBc5Zoly82Sv9HMZjdEXrx2dIvfMd9MNw695rWSxwy2wTDHvpVQBR4g4uDy6sWhu7CkRjXJUG8gWxXNNZIW1uo7oDw7cgAuHHXes3OLKlVcDA2jueVnMIv5gh5upl-_8nlb4JTwuTJgRQXH2sAin7a1Y289s8hHv9Efgap7XGyDdyuqIE8_noqGAA8PnT51foWYIJCJAxKIAtDFibG6RGQ4sU-BYlZmHDdFxvq0HTohXtXQSF54yebe_ZtSFOwGuafpKQ-AfnwNraPjfQJQhzeIO0W6xJT7Kf2M-8f8dmknHWgSORDQWuWdIP7A3DGazFok7jtqfTorUMriSste9ReZSk65gBLAIrv5iSSGFYq86lBgyMWpu5MZT_I0q3Y9V89pGaS5cJ11z_ElB9Dm7KjEgBPaaEoPQ508sh93a9py5JMLbDUizGJz5RDe8_MAbgBMaej8DaRvI0Wx6isceyLLtrTyXlY9-yZn-Y0koA0GKBYphPGvOf4qZgbr8PRdMdIN6NIGHTsdUrnC4Vos-iaeaB-pMrnkx0_ljGbCsjP0JbyCOcaO5ZVmNMUidaog_oMDQtNfJ11EF9oM-Y9GSuGqFnghYWRn3tnz2ezlz5B_R9XIeS7rzCEgBNfXtNp8-hVi5YFhvENcWZ97gNSYpIz9Xc8dBxMB5waLt1VC0L_-jap3m4Z1G-XgI4_AdNlkeRC0XPQluAF6ctieCcOb-cUYqtxNSipIUB2nfakSPZYGHbV34TO6vXbsNuGQEdGVHFsSqQh7e9QBKQHKrKBngLPDzU9vCEoJzF9NYP_2XxENPthYu1F6TUtyAsuFwnXp0wGCb_amYs4-X8PW2PSXsFaRLZi6lD1qHatT3ClJ96LKwMILF77ErQvjPtc_QeIAo2sWfeCdJ5gjdxk_iopU6MGCj6q8Wc86gnqe9J8zwJNxTObE8GX5y5dFtiIhO_o7JMjqc47UH0QiUdQ-53pV9vDErdLWL_RIWjxdbbq5DbVOFj1WCSup2M8bYn57zKi06770bv5-YzhNtLR--j6t8lGZBahORRzVLMld_AHv6mmHRJf4jRD896HHHyF8A4CXihSvfhtayzDqIMxoEJfOpeIs3yLBAHOtzhKn4qX9XJIi70SXjRaSHwY4CZWbRPY3WULXisTq-psApTBlGwChz2Atns37CcSvm-1YccIJPAbCimTANT8B-Wh-yJeBBXIB546CVYb5UoY4TspLHaho0rA_e7YIghSty_q78-aDtO6Lz_RVJkOJZWoHKc-KlbAikGlTd_7-TTOug-cjHhtTNY8gzLjhqB80gp1tGdTETP7LkGxFy3UoCsWN4FDUyYRxUd-94s5p7jSX2_p6KqlukGKL4cAjQPp8SatfVgtqlRZHPxo9_gC1CSY30e2C2SxRIh-txMZtJDQLdmnqLjlSWq8paJCPRnaCCxS7gVEkSO4LitOLACd0UCngFOw-E6V77qtdkbkJl5QouWLKxMGCHcCVcfj68wivwFs766gWQ-eel_-KUeYj0gw-f3Ym2DNROzxBAVUEBNP8WvfqMkysF00SVbX7WW8yqRWtVekqJUGCiIYLqISqV6gvdDBZIZG1Um8M5vmCXk-SECdOU2RFtQLJqT4gw5LjI9Cq1C13L8ufwi4jDm0H8i0OTqW1AbFhU7FpQ4HbR7_uOa9RmEvBh0Pzi2JRJZRdjPY0blJgeOlQEBuCvJ_ebuoicndglPvBbVS9N3ta1mM55j60QzW9BY_psatuhW2qRmor_l9-C5qph3SsqVHJI1dKhij4PTnxiHLaIbXGfc497bhwTimIUodFQq1RAjfcjog2U4deXAMNpHM3NiRxVy9qSZ3hBXE60p-sUL7iUaceUClvBurLg3IJAqPf4fxfoepdlTIr7HIq7BFPRWenpc-tfJQeU1Q-vT22Au4sVWmRR7EC9MBHtJbN6Lvf2WzEXlYn7qGmFeOM823kbhXqkYJAC2Zkpi7OvPO6eYjsL41dcSQTS-OGcJqXYcos8aWKfl5yU_R_TNlnMRZgiTjoar1Prt5C16Mxp4tDut6GarqLkDhCU2wuprNX4d0zk2Qrf8HkRFFS-S_O_I-XJ8SRk6yQKwMRvoLyCjrTakHrW26qT_Hv5lsjpSWUxNiEgW6ceiDYJ"};</script>
 <script>
 /* 獨立網頁版：取代 Claude 平台能力（下載、語音、共用資料） */
 (function(){
@@ -1517,7 +1578,7 @@ if(window.claude&&window.claude.use){
     const key=await crypto.subtle.importKey('raw',b64u(k),'AES-GCM',false,['decrypt']);
     const S=window.__SEALED__;
     const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(S.iv)},key,b64u(S.ct));
-    window.__SEED__=JSON.parse(new TextDecoder().decode(pt));
+    const obj=JSON.parse(new TextDecoder().decode(pt));window.__SEED__=obj&&obj.case?obj.case:obj;window.__VIEWER__=(obj&&obj.viewer)||'';
     const h=new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ws:'+k)));
     window.__WS__=[...h].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,40);
   }catch(e){try{localStorage.removeItem('qt-key')}catch(_){}lock('鑰匙不對，打不開資料。請確認連結有完整複製。');return}
